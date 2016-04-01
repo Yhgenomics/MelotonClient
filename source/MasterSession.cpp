@@ -2,6 +2,8 @@
 #include <MessageOpenFile.pb.h>
 #include <Parameter.h>
 #include <MessageWrite.pb.h>
+#include <MessageRead.pb.h>
+#include <MessageTell.pb.h>
 
 MasterSession::MasterSession()
 {
@@ -36,7 +38,24 @@ void MasterSession::StartWrite()
 
 void MasterSession::StartRead()
 {
+    file_stream_.open( Parameter::Instance()->LocalPath.c_str() , ios::out | ios::binary );
+    
+    if ( !file_stream_.is_open() )
+    {
+        printf( "Error: Can't find local file" );
+        this->Close();
+        return;
+    }
 
+    file_stream_.seekg( 0 , ios::end );
+    size_t len = file_stream_.tellg();
+
+    uptr<MessageTell> tell = make_uptr( MessageTell );
+    tell->set_token( Parameter::Instance()->OpenToken );
+    tell->set_path ( Parameter::Instance()->RemovePath.c_str() , 
+                     Parameter::Instance()->RemovePath.size() );
+
+    this->SendMessage( move_ptr( tell ) );
 } 
 
 void MasterSession::OnConnect()

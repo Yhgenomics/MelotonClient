@@ -162,11 +162,15 @@
     <ClCompile Include="..\message\MessageRead.pb.cc" />
     <ClCompile Include="..\message\MessageReadBlock.pb.cc" />
     <ClCompile Include="..\message\MessageSyncBlock.pb.cc" />
+    <ClCompile Include="..\message\MessageTell.pb.cc" />
+    <ClCompile Include="..\message\MessageTellACK.pb.cc" />
     <ClCompile Include="..\message\MessageWrite.pb.cc" />
     <ClCompile Include="..\source\MasterConnector.cpp" />
     <ClCompile Include="..\source\MasterSession.cpp" />
     <ClCompile Include="..\source\MelotonSession.cpp" />
     <ClCompile Include="..\source\NodeConnector.cpp" />
+    <ClCompile Include="..\source\NodeReceiveSession.cpp" />
+    <ClCompile Include="..\source\NodeSendSession.cpp" />
     <ClCompile Include="..\source\Parameter.cpp" />
     <ClCompile Include="MelotonClient.cpp" />
   </ItemGroup>
@@ -187,11 +191,15 @@
     <ClInclude Include="..\handler\MessageReadBlockHandler.h" />
     <ClInclude Include="..\handler\MessageReadHandler.h" />
     <ClInclude Include="..\handler\MessageSyncBlockHandler.h" />
+    <ClInclude Include="..\handler\MessageTellACKHandler.h" />
+    <ClInclude Include="..\handler\MessageTellHandler.h" />
     <ClInclude Include="..\handler\MessageWriteHandler.h" />
     <ClInclude Include="..\include\MasterConnector.h" />
     <ClInclude Include="..\include\MasterSession.h" />
     <ClInclude Include="..\include\MelotonSession.h" />
     <ClInclude Include="..\include\NodeConnector.h" />
+    <ClInclude Include="..\include\NodeReceiveSession.h" />
+    <ClInclude Include="..\include\NodeSendSession.h" />
     <ClInclude Include="..\include\Parameter.h" />
     <ClInclude Include="..\include\Settings.h" />
     <ClInclude Include="..\message\MessageAlive.pb.h" />
@@ -209,6 +217,8 @@
     <ClInclude Include="..\message\MessageRead.pb.h" />
     <ClInclude Include="..\message\MessageReadBlock.pb.h" />
     <ClInclude Include="..\message\MessageSyncBlock.pb.h" />
+    <ClInclude Include="..\message\MessageTell.pb.h" />
+    <ClInclude Include="..\message\MessageTellACK.pb.h" />
     <ClInclude Include="..\message\MessageWrite.pb.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

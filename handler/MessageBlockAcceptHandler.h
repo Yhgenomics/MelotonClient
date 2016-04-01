@@ -23,11 +23,11 @@ limitations under the License.
 #include <string>
 #include <MRT.h>
 #include <MessageBlockAccept.pb.h>
-#include <NodeConnector.h>
+#include <NodeSendSession.h>
 
 static int MessageBlockAcceptHandler( MRT::Session * session , uptr<MessageBlockAccept> message )
 {
-    NodeSession* node = ( NodeSession* ) session;
+    NodeSendSession* node = ( NodeSendSession* ) session;
     
     if ( message->nextsize() == 0 )
         return -1;

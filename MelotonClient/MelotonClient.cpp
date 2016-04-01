@@ -49,16 +49,21 @@ int main( int argc , char * argv[] )
 
 void UploadBlock()
 {
+    if ( Parameter::Instance()->BlockList == nullptr )
+    {
+        return;
+    }
+
     int block_count = Parameter::Instance()->BlockList->blockcount();
 
     for ( int i = 0; i < block_count; i++ )
     {
-        auto token       = Parameter::Instance()->BlockList->token( i );
-        auto ip          = Parameter::Instance()->BlockList->ip( i );
-        auto port        = Parameter::Instance()->BlockList->port( i );
-        auto size        = Parameter::Instance()->BlockList->size( i );
-        auto fileOffset  = Parameter::Instance()->BlockList->fileoffset( i );
-        auto partid      = Parameter::Instance()->BlockList->partid( i );
+        auto token       = Parameter::Instance()->BlockList->token      ( i );
+        auto ip          = Parameter::Instance()->BlockList->ip         ( i );
+        auto port        = Parameter::Instance()->BlockList->port       ( i );
+        auto size        = Parameter::Instance()->BlockList->size       ( i );
+        auto fileOffset  = Parameter::Instance()->BlockList->fileoffset ( i );
+        auto partid      = Parameter::Instance()->BlockList->partid     ( i );
       
         Logger::Log( "Prepare to send part %" , partid );
 
@@ -70,7 +75,28 @@ void UploadBlock()
 
 void DownloadBlock()
 {
+    if ( Parameter::Instance()->BlockList == nullptr )
+    {
+        return;
+    }
 
+    int block_count = Parameter::Instance()->BlockList->blockcount();
+
+    for ( int i = 0; i < block_count; i++ )
+    {
+        auto token       = Parameter::Instance()->BlockList->token      ( i );
+        auto ip          = Parameter::Instance()->BlockList->ip         ( i );
+        auto port        = Parameter::Instance()->BlockList->port       ( i );
+        auto size        = Parameter::Instance()->BlockList->size       ( i );
+        auto fileOffset  = Parameter::Instance()->BlockList->fileoffset ( i );
+        auto partid      = Parameter::Instance()->BlockList->partid     ( i );
+      
+        Logger::Log( "Prepare to read part %" , partid );
+
+        auto connector = make_uptr( NodeConnector , ip , port , fileOffset , token);
+        Maraton::Instance()->Regist( move_ptr(connector) );
+        Maraton::Instance()->Run();
+    }
 }
 
 bool InitialDefaultParameter()

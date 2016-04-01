@@ -65,6 +65,18 @@
     <ClCompile Include="..\source\NodeConnector.cpp">
       <Filter>source</Filter>
     </ClCompile>
+    <ClCompile Include="..\message\MessageTell.pb.cc">
+      <Filter>message</Filter>
+    </ClCompile>
+    <ClCompile Include="..\message\MessageTellACK.pb.cc">
+      <Filter>message</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\NodeReceiveSession.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\NodeSendSession.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="include">
@@ -196,6 +208,24 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\Settings.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\handler\MessageTellHandler.h">
+      <Filter>handler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\message\MessageTell.pb.h">
+      <Filter>message</Filter>
+    </ClInclude>
+    <ClInclude Include="..\message\MessageTellACK.pb.h">
+      <Filter>message</Filter>
+    </ClInclude>
+    <ClInclude Include="..\handler\MessageTellACKHandler.h">
+      <Filter>handler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\NodeReceiveSession.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\NodeSendSession.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>

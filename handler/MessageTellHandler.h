@@ -1,6 +1,6 @@
 /***********************************************************************************
 This file is part of Project for Meloton
-For the latest info, see  https://github.com/Yhgenomics/MelotonNode.git
+For the latest info, see  https://github.com/Yhgenomics/MelotonClient.git
 Copyright 2016 Yhgenomics
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -14,23 +14,17 @@ limitations under the License.
 ***********************************************************************************/
 
 /***********************************************************************************
-* Description   : MessageBlockList handler.
+* Description   : MessageTell handler.
 * Creator       : Shubo Yang(shuboyang@yhgenomics.com)
-* Date          : 2016-03-30
-* Modifed       : 2016-03-30      | Shubo Yang      | Create
+* Date          : 2016-04-01
+* Modifed       : 2016-04-01      | Shubo Yang      | Create
 ***********************************************************************************/
 
 #include <string>
 #include <MRT.h>
-#include <MessageBlockList.pb.h>
-#include <Parameter.h>
-#include <MasterSession.h>
-#include <Maraton.h>
+#include <MessageTell.pb.h>
 
-static int MessageBlockListHandler( MRT::Session * session , uptr<MessageBlockList> message )
+static int MessageTellHandler( MRT::Session * session , uptr<MessageTell> message )
 {
-    MasterSession * master           = ( MasterSession* ) session;
-    Parameter::Instance()->BlockList = move_ptr( message );
-    
-    return -1;
+    return 0;
 }

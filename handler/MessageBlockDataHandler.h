@@ -23,8 +23,11 @@ limitations under the License.
 #include <string>
 #include <MRT.h>
 #include <MessageBlockData.pb.h>
+#include <NodeReceiveSession.h>
 
 static int MessageBlockDataHandler( MRT::Session * session , uptr<MessageBlockData> message )
 {
-    return 0;
+    auto node = scast<NodeReceiveSession*>( session );
+
+    return node->AcceptBlock( move_ptr( message ) ) ? 0 : -1;
 }

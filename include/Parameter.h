@@ -59,6 +59,7 @@ public:
 
     fstream                 LocalFileStream;
     fstream                 RemoteFileStream;
+    size_t                  RemoteFileSize  = 0;
 };
  
 #endif // !PARAMETER_H_ 

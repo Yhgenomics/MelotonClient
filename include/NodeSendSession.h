@@ -24,41 +24,44 @@ limitations under the License.
 * Modifed       : When      | Who       | What
 ***********************************************************************************/
 
-#ifndef NODE_CONNECTOR_H_
-#define NODE_CONNECTOR_H_
+#ifndef NODE_SEND_SESSION_H_
+#define NODE_SEND_SESSION_H_
 
 #include <string>
 #include <MRT.h>
 #include <MelotonSession.h>
 #include <Settings.h>
- 
-using namespace std;
-using namespace MRT;
 
-class NodeConnector :
-    public Connector
+using std::string;
+using MRT::Connector;
+using MRT::Session;
+
+class NodeSendSession :
+    public MelotonSession
 {
 public:
-
-    NodeConnector ( string ip , int port , size_t fileoffset , string token );
-    ~NodeConnector();
+    
+    NodeSendSession(size_t fileoffset , string token);
+    ~NodeSendSession();
 
     size_t FileOffset() { return this->file_offset_; };
     string Token() { return this->token_; };
+    void AcceptBlock( size_t size , 
+                      size_t next_offset , 
+                      size_t next_size );
 
 protected:
 
-    // Create a session 
-    virtual Session * CreateSession    ( ) override;
+     void OnConnect  () override;
+     bool SendData   ();
 
-    // Callback when a session is created
-    virtual void      OnSessionOpen   ( Session * session ) override;
+private:
 
-    // Callback after a session is closed
-    virtual void      OnSessionClose  ( Session * session ) override;
-
-    size_t file_offset_;
-    string token_;
+    size_t file_offset_   = 0;
+    string token_         = "";
+    size_t block_offset_  = 0;
+    size_t transfer_size_ = BLOCK_DATA_SIZE;
 };
 
-#endif // !NODE_CONNECTOR_H_ 
+
+#endif // !NODE_SEND_SESSION_H_ 
