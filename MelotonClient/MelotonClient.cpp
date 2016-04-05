@@ -65,7 +65,7 @@ void UploadBlock()
         auto fileOffset  = Parameter::Instance()->BlockList->fileoffset ( i );
         auto partid      = Parameter::Instance()->BlockList->partid     ( i );
       
-        Logger::Log( "Prepare to send part %" , partid );
+        Logger::Log( "sending part % / %" , ( 1 + partid ) , block_count );
 
         auto connector = make_uptr( NodeConnector , ip , port , fileOffset , token);
         Maraton::Instance()->Regist( move_ptr(connector) );
@@ -91,7 +91,7 @@ void DownloadBlock()
         auto fileOffset  = Parameter::Instance()->BlockList->fileoffset ( i );
         auto partid      = Parameter::Instance()->BlockList->partid     ( i );
       
-        Logger::Log( "Prepare to read part %" , partid );
+        Logger::Log( "receiving part % / %" , ( 1 + partid ) , block_count );
 
         auto connector = make_uptr( NodeConnector , ip , port , fileOffset , token);
         Maraton::Instance()->Regist( move_ptr(connector) );
@@ -172,23 +172,16 @@ bool CheckFileExist()
 {
     if ( Parameter::Instance()->IsUpload )
     {
-        Parameter::Instance()->LocalFileStream.open( Parameter::Instance()->LocalPath , ios::in | ios::binary);
-
-        if ( !Parameter::Instance()->LocalFileStream.is_open() ||
-             !Parameter::Instance()->LocalFileStream.good() )
-        {
-            return false;
-        }
+        Parameter::Instance()->LocalFileStream = fopen( Parameter::Instance()->LocalPath.c_str() , "rb" );
     }
     else
     {
-        Parameter::Instance()->LocalFileStream.open( Parameter::Instance()->LocalPath , ios::out | ios::binary );
+        Parameter::Instance()->LocalFileStream = fopen( Parameter::Instance()->LocalPath.c_str() , "wb" );
+    }
 
-        if ( !Parameter::Instance()->LocalFileStream.is_open() ||
-             !Parameter::Instance()->LocalFileStream.good() )
-        {
-            return false;
-        }
+    if ( Parameter::Instance()->LocalFileStream == nullptr )
+    {
+        return false;
     }
 
     return true;

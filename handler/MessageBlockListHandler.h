@@ -31,6 +31,5 @@ static int MessageBlockListHandler( MRT::Session * session , uptr<MessageBlockLi
 {
     MasterSession * master           = ( MasterSession* ) session;
     Parameter::Instance()->BlockList = move_ptr( message );
-    
     return -1;
 }

@@ -2,6 +2,14 @@
 #include <Parameter.h>
 #include <MessageBlockData.pb.h>
 
+#ifdef _WIN32
+#define fseek _fseeki64 
+#define ftell _ftelli64
+#else
+#define fseek fseeko64
+#define ftell ftello64
+#endif
+
 NodeSendSession::NodeSendSession( size_t fileoffset , string token )
 {
     this->file_offset_ = fileoffset;
@@ -20,15 +28,19 @@ void NodeSendSession::OnConnect()
 
 bool NodeSendSession::SendData()
 {
-    auto&  stream =  Parameter::Instance()->LocalFileStream;
+    auto   stream =  Parameter::Instance()->LocalFileStream;
     char * buffer = new char[this->transfer_size_];
     size_t offset = this->file_offset_ + this->block_offset_;
      
-    stream.seekg( offset , ios::beg );
+    fseek( stream , offset , SEEK_SET );
+    auto reads = fread( buffer , 
+                        1 ,
+                        this->transfer_size_ , 
+                        stream );
+    /*stream.seekg( offset , stream.beg );
     stream.read ( buffer , 
                   this->transfer_size_ );
-
-    auto reads = stream.gcount();
+    auto reads = stream.gcount();*/
 
     if ( reads == 0 )
     {
@@ -56,11 +68,7 @@ bool NodeSendSession::SendData()
 
     this->block_offset_ += reads;
     SAFE_DELETE( buffer );
-
-    Logger::Log( "Send Block Data @ % to %" , 
-                 offset , 
-                 offset + this->transfer_size_ );
-
+     
     return true;
 }
 

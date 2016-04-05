@@ -38,6 +38,8 @@ limitations under the License.
 
 using namespace std;
 
+
+
 class Parameter
 {
 public:
@@ -57,8 +59,8 @@ public:
     
     uptr<MessageBlockList>  BlockList       = nullptr;
 
-    fstream                 LocalFileStream;
-    fstream                 RemoteFileStream;
+    FILE*                   LocalFileStream;
+    FILE*                   RemoteFileStream;
     size_t                  RemoteFileSize  = 0;
 };
  

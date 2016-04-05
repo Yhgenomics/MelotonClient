@@ -2,6 +2,14 @@
 #include <MessageReadBlock.pb.h>
 #include <Parameter.h>
 
+#ifdef _WIN32
+#define fseek _fseeki64 
+#define ftell _ftelli64
+#else
+#define fseek fseeko64
+#define ftell ftello64
+#endif
+
 NodeReceiveSession::NodeReceiveSession( size_t offset , string token )
 {
     this->token_        = token;
@@ -16,13 +24,20 @@ NodeReceiveSession::~NodeReceiveSession()
 
 bool NodeReceiveSession::AcceptBlock( uptr<MessageBlockData> data )
 {
+    auto stream          = Parameter::Instance()->LocalFileStream;
     auto offset          = this->file_offset_ + this->block_offset_;
     auto size            = data->data().size();
+
+    fseek( stream , offset , SEEK_SET );
+    auto reads = fwrite((void*)data->data().c_str() , 
+                        1 ,
+                        size , 
+                        stream );
     
-    Parameter::Instance()->LocalFileStream.seekg( offset , 
-                                                  ios::beg );
-    Parameter::Instance()->LocalFileStream.write( data->data().c_str() ,
-                                                  data->data().size() );
+    //Parameter::Instance()->LocalFileStream.seekg( offset , 
+    //                                              ios::beg );
+    //Parameter::Instance()->LocalFileStream.write( data->data().c_str() ,
+    //                                              data->data().size() );
     this->block_offset_ += size;
 
     if ( !data->islast() )
@@ -48,3 +63,4 @@ void NodeReceiveSession::SendRequest()
     this->SendMessage( move_ptr( msg ) );
 }
  
+
