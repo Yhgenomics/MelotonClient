@@ -149,7 +149,6 @@ public:
         
         return string( name );
     }
-
 };
 
 NS_MARATON_END

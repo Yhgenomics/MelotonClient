@@ -60,6 +60,7 @@ public:
     uptr<MessageBlockList>  BlockList       = nullptr;
 
     FILE*                   LocalFileStream;
+    size_t                  LocalFileSize   = 0;
     FILE*                   RemoteFileStream;
     size_t                  RemoteFileSize  = 0;
 };

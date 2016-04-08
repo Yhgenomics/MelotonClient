@@ -12,6 +12,10 @@ bool CheckFileExist();
 
 int main( int argc , char * argv[] )
 {
+    size_t time = Timer::Tick() / 1000;
+
+    Logger::Log( "client start" );
+
     if ( !InitialDefaultParameter() )
         return 1;
 
@@ -21,15 +25,14 @@ int main( int argc , char * argv[] )
     if ( !CheckFileExist() )
         return 1;
 
-   Logger::Log( "LocalPath: %" , Parameter::Instance()->LocalPath.c_str() );
-   Logger::Log( "RemovePath: %" , Parameter::Instance()->RemovePath.c_str() );
-   Logger::Log( "MasterAddress: %" , Parameter::Instance()->MasterAddress.c_str() );
-   Logger::Log( "MasterPort: %" , Parameter::Instance()->MasterPort );
-   Logger::Log( "Is Upload: %" , ( Parameter::Instance()->IsUpload ? "true" : "false" ) );
+    Logger::Log( "localPath: %" , Parameter::Instance()->LocalPath.c_str() );
+    Logger::Log( "removePath: %" , Parameter::Instance()->RemovePath.c_str() );
+    Logger::Log( "masterAddress: %:%" , Parameter::Instance()->MasterAddress.c_str() ,
+                 Parameter::Instance()->MasterPort );
+    Logger::Log( "method: %" , ( Parameter::Instance()->IsUpload ? "put" : "get" ) );
 
-
-    uptr<MasterConnector> connector = make_uptr( MasterConnector , 
-                                                 Parameter::Instance()->MasterAddress , 
+    uptr<MasterConnector> connector = make_uptr( MasterConnector ,
+                                                 Parameter::Instance()->MasterAddress ,
                                                  Parameter::Instance()->MasterPort );
 
     MRT::Maraton::Instance()->Regist( move_ptr( connector ) );
@@ -43,6 +46,8 @@ int main( int argc , char * argv[] )
     {
         DownloadBlock();
     }
+
+    Logger::Log( "cast %ms" , ( Timer::Tick() / 1000 - time ) );
 
     return 0;
 }
@@ -64,11 +69,15 @@ void UploadBlock()
         auto size        = Parameter::Instance()->BlockList->size       ( i );
         auto fileOffset  = Parameter::Instance()->BlockList->fileoffset ( i );
         auto partid      = Parameter::Instance()->BlockList->partid     ( i );
-      
-        Logger::Log( "sending part % / %" , ( 1 + partid ) , block_count );
 
-        auto connector = make_uptr( NodeConnector , ip , port , fileOffset , token);
-        Maraton::Instance()->Regist( move_ptr(connector) );
+        Logger::Log( "sending part % / % (%%)\tto %" ,
+                     ( 1 + i ) ,
+                     block_count ,
+                     ( int ) ( ( ( float ) ( 1 + i ) / ( float ) block_count ) * 100.0f ) , "%" ,
+                     ip);
+
+        auto connector = make_uptr( NodeConnector , ip , port , fileOffset , token , size );
+        Maraton::Instance()->Regist( move_ptr( connector ) );
         Maraton::Instance()->Run();
     }
 }
@@ -90,11 +99,16 @@ void DownloadBlock()
         auto size        = Parameter::Instance()->BlockList->size       ( i );
         auto fileOffset  = Parameter::Instance()->BlockList->fileoffset ( i );
         auto partid      = Parameter::Instance()->BlockList->partid     ( i );
-      
-        Logger::Log( "receiving part % / %" , ( 1 + partid ) , block_count );
 
-        auto connector = make_uptr( NodeConnector , ip , port , fileOffset , token);
-        Maraton::Instance()->Regist( move_ptr(connector) );
+        Logger::Log( "receiving part % / % (%%)\tto %" ,
+                     ( 1 + i ) ,
+                     block_count ,
+                     ( int ) ( ( ( float ) ( 1 + i ) / ( float ) block_count ) * 100.0f ) , 
+                     "%",
+                     ip);
+
+        auto connector = make_uptr( NodeConnector , ip , port , fileOffset , token , size );
+        Maraton::Instance()->Regist( move_ptr( connector ) );
         Maraton::Instance()->Run();
     }
 }

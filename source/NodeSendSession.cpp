@@ -10,10 +10,11 @@
 #define ftell ftello64
 #endif
 
-NodeSendSession::NodeSendSession( size_t fileoffset , string token )
+NodeSendSession::NodeSendSession( size_t fileoffset , string token , size_t size )
 {
     this->file_offset_ = fileoffset;
     this->token_       = token;
+    this->size_        = size;
 }
 
 NodeSendSession::~NodeSendSession()
@@ -28,34 +29,19 @@ void NodeSendSession::OnConnect()
 
 bool NodeSendSession::SendData()
 {
-    auto   stream =  Parameter::Instance()->LocalFileStream;
-    char * buffer = new char[this->transfer_size_];
-    size_t offset = this->file_offset_ + this->block_offset_;
+    auto   stream       = Parameter::Instance()->LocalFileStream;
+    auto   read_size    = this->size_ > this->transfer_size_ ? this->transfer_size_ : this->size_;
+    
+    char * buffer       = new char[read_size];
+    size_t offset       = this->file_offset_ + this->block_offset_;
      
     fseek( stream , offset , SEEK_SET );
     auto reads = fread( buffer , 
                         1 ,
-                        this->transfer_size_ , 
+                        read_size , 
                         stream );
-    /*stream.seekg( offset , stream.beg );
-    stream.read ( buffer , 
-                  this->transfer_size_ );
-    auto reads = stream.gcount();*/
 
-    if ( reads == 0 )
-    {
-        auto msg = make_uptr( MessageBlockData );
-        msg->set_offset     ( this->block_offset_ );
-        msg->set_token      ( this->token_ );
-        msg->set_size       ( reads );
-        msg->set_data       ( "" , 0 );
-        msg->set_checksum   ( 0 );
-        msg->set_islast     ( true );
-        this->SendMessage   ( move_ptr( msg ) );
-
-        SAFE_DELETE( buffer );
-        return false;
-    }
+    this->size_ -= reads;  
 
     auto msg = make_uptr( MessageBlockData );
     msg->set_offset     ( this->block_offset_ );
@@ -63,7 +49,7 @@ bool NodeSendSession::SendData()
     msg->set_size       ( reads );
     msg->set_data       ( buffer , reads );
     msg->set_checksum   ( 0 );
-    msg->set_islast     ( false );
+    msg->set_islast     ( this->size_ == 0 || reads < read_size );
     this->SendMessage   ( move_ptr( msg ) );
 
     this->block_offset_ += reads;

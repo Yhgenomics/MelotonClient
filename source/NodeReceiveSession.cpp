@@ -33,11 +33,7 @@ bool NodeReceiveSession::AcceptBlock( uptr<MessageBlockData> data )
                         1 ,
                         size , 
                         stream );
-    
-    //Parameter::Instance()->LocalFileStream.seekg( offset , 
-    //                                              ios::beg );
-    //Parameter::Instance()->LocalFileStream.write( data->data().c_str() ,
-    //                                              data->data().size() );
+     
     this->block_offset_ += size;
 
     if ( !data->islast() )

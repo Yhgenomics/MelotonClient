@@ -5,6 +5,15 @@
 #include <MessageRead.pb.h>
 #include <MessageTell.pb.h>
 
+#ifdef _WIN32
+#define fseek _fseeki64 
+#define ftell _ftelli64
+#else
+#define fseek fseeko64
+#define ftell ftello64
+#endif
+
+
 MasterSession::MasterSession()
 {
    
@@ -16,18 +25,18 @@ MasterSession::~MasterSession()
 }
 
 void MasterSession::StartWrite()
-{
-    file_stream_.open( Parameter::Instance()->LocalPath.c_str() , ios::in | ios::binary );
-    
-    if ( !file_stream_.is_open() )
+{ 
+    fseek( Parameter::Instance()->LocalFileStream , 0 , SEEK_END );
+    size_t len = ftell( Parameter::Instance()->LocalFileStream );
+
+    if ( len == 0 )
     {
-        printf( "Error: Can't find local file" );
+        Logger::Log( "the size of local file is zero!" );
         this->Close();
         return;
     }
 
-    file_stream_.seekg( 0 , ios::end );
-    size_t len = file_stream_.tellg();
+    Parameter::Instance()->LocalFileSize = len;
 
     uptr<MessageWrite> write = make_uptr( MessageWrite );
     write->set_offset( 0 );
@@ -37,19 +46,7 @@ void MasterSession::StartWrite()
 }
 
 void MasterSession::StartRead()
-{
-    file_stream_.open( Parameter::Instance()->LocalPath.c_str() , ios::out | ios::binary );
-    
-    if ( !file_stream_.is_open() )
-    {
-        printf( "Error: Can't find local file" );
-        this->Close();
-        return;
-    }
-
-    file_stream_.seekg( 0 , ios::end );
-    size_t len = file_stream_.tellg();
-
+{ 
     uptr<MessageTell> tell = make_uptr( MessageTell );
     tell->set_token( Parameter::Instance()->OpenToken );
     tell->set_path ( Parameter::Instance()->RemovePath.c_str() , 

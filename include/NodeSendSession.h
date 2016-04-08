@@ -41,7 +41,7 @@ class NodeSendSession :
 {
 public:
     
-    NodeSendSession(size_t fileoffset , string token);
+    NodeSendSession(size_t fileoffset , string token , size_t size );
     ~NodeSendSession();
 
     size_t FileOffset() { return this->file_offset_; };
@@ -61,6 +61,7 @@ private:
     string token_         = "";
     size_t block_offset_  = 0;
     size_t transfer_size_ = BLOCK_DATA_SIZE;
+    size_t size_          = 0;
 };
 
 

@@ -40,7 +40,11 @@ class NodeConnector :
 {
 public:
 
-    NodeConnector ( string ip , int port , size_t fileoffset , string token );
+    NodeConnector ( string ip , 
+                    int port , 
+                    size_t fileoffset ,
+                    string token , 
+                    size_t size );
     ~NodeConnector();
 
     size_t FileOffset() { return this->file_offset_; };
@@ -58,6 +62,7 @@ protected:
     virtual void      OnSessionClose  ( Session * session ) override;
 
     size_t file_offset_;
+    size_t size_;
     string token_;
 };
 

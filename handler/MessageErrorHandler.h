@@ -26,5 +26,9 @@ limitations under the License.
 
 static int MessageErrorHandler( MRT::Session * session , uptr<MessageError> message )
 {
+
+    Logger::Error( "(%)%" , message->code() , message->message() );
+    exit( message->code() );
+
     return 0;
 }
