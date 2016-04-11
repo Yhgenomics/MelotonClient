@@ -36,10 +36,23 @@ Session * NodeConnector::CreateSession()
 
 void NodeConnector::OnSessionOpen( Session * session )
 {
-
+    if ( Parameter::Instance()->IsUpload )
+    {
+        auto s = scast<NodeSendSession*>( session );
+    }
+    else
+    {
+        auto s = scast<NodeReceiveSession*>( session );
+    }
 }
 
 void NodeConnector::OnSessionClose( Session * session )
 {
+    if ( session->LastError().Code() != 0 )
+    {
+        Logger::Error( "<%>%" , session->LastError().Code() ,
+                       session->LastError().Message() );
+    }
+
     SAFE_DELETE( session );
 }

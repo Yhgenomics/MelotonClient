@@ -60,25 +60,42 @@ void UploadBlock()
     }
 
     int block_count = Parameter::Instance()->BlockList->blockcount();
-
+    int dl_partid   = 0;
     for ( int i = 0; i < block_count; i++ )
     {
-        auto token       = Parameter::Instance()->BlockList->token      ( i );
-        auto ip          = Parameter::Instance()->BlockList->ip         ( i );
-        auto port        = Parameter::Instance()->BlockList->port       ( i );
-        auto size        = Parameter::Instance()->BlockList->size       ( i );
-        auto fileOffset  = Parameter::Instance()->BlockList->fileoffset ( i );
-        auto partid      = Parameter::Instance()->BlockList->partid     ( i );
+        int index = 0;
+
+        for ( int p = 0; p < block_count; p++ )
+        {
+            if ( Parameter::Instance()->BlockList->partid( p ) == dl_partid )
+            {
+                index = p;
+                break;
+            }
+        }
+
+        auto token       = Parameter::Instance()->BlockList->token      ( index );
+        auto ip          = Parameter::Instance()->BlockList->ip         ( index );
+        auto port        = Parameter::Instance()->BlockList->port       ( index );
+        auto size        = Parameter::Instance()->BlockList->size       ( index );
+        auto fileOffset  = Parameter::Instance()->BlockList->fileoffset ( index );
+        auto partid      = Parameter::Instance()->BlockList->partid     ( index );
 
         Logger::Log( "sending part % / % (%%)\tto %" ,
                      ( 1 + i ) ,
                      block_count ,
                      ( int ) ( ( ( float ) ( 1 + i ) / ( float ) block_count ) * 100.0f ) , "%" ,
-                     ip);
+                     ip );
+        
+        dl_partid++;
 
-        auto connector = make_uptr( NodeConnector , ip , port , fileOffset , token , size );
+        if ( size == 0 )
+            continue;
+
+        auto connector = make_uptr( NodeConnector , ip , 112 , fileOffset , token , size );
         Maraton::Instance()->Regist( move_ptr( connector ) );
         Maraton::Instance()->Run();
+
     }
 }
 
@@ -90,15 +107,32 @@ void DownloadBlock()
     }
 
     int block_count = Parameter::Instance()->BlockList->blockcount();
+    int dl_partid = 0;
 
     for ( int i = 0; i < block_count; i++ )
     {
-        auto token       = Parameter::Instance()->BlockList->token      ( i );
-        auto ip          = Parameter::Instance()->BlockList->ip         ( i );
-        auto port        = Parameter::Instance()->BlockList->port       ( i );
-        auto size        = Parameter::Instance()->BlockList->size       ( i );
-        auto fileOffset  = Parameter::Instance()->BlockList->fileoffset ( i );
-        auto partid      = Parameter::Instance()->BlockList->partid     ( i );
+        int index = 0;
+
+        for ( int p = 0; p < block_count; p++ )
+        {
+            if ( Parameter::Instance()->BlockList->partid( p ) == dl_partid )
+            {
+                index = p;
+                break;
+            }
+        }
+
+        auto token       = Parameter::Instance()->BlockList->token      ( index );
+        auto ip          = Parameter::Instance()->BlockList->ip         ( index );
+        auto port        = Parameter::Instance()->BlockList->port       ( index );
+        auto size        = Parameter::Instance()->BlockList->size       ( index );
+        auto fileOffset  = Parameter::Instance()->BlockList->fileoffset ( index );
+        auto partid      = Parameter::Instance()->BlockList->partid     ( index );
+
+         dl_partid++;
+
+        if ( size == 0 )
+            continue;
 
         Logger::Log( "receiving part % / % (%%)\tto %" ,
                      ( 1 + i ) ,
@@ -107,7 +141,7 @@ void DownloadBlock()
                      "%",
                      ip);
 
-        auto connector = make_uptr( NodeConnector , ip , port , fileOffset , token , size );
+        auto connector = make_uptr( NodeConnector , ip , 112 , fileOffset , token , size );
         Maraton::Instance()->Regist( move_ptr( connector ) );
         Maraton::Instance()->Run();
     }
@@ -116,7 +150,7 @@ void DownloadBlock()
 bool InitialDefaultParameter()
 {
     Parameter::Instance()->MasterAddress = "127.0.0.1";
-    Parameter::Instance()->MasterPort    = 101;
+    Parameter::Instance()->MasterPort    = 111;
     Parameter::Instance()->IsUpload      = false;
     return true;
 }

@@ -45,6 +45,7 @@ public:
     size_t FileOffset  () { return this->file_offset_; };
     string Token       () { return this->token_; };
     bool   AcceptBlock ( uptr<MessageBlockData> data );
+    void   SendRequest();
 
 protected:
 
@@ -57,7 +58,6 @@ private:
     size_t block_offset_  = 0;
     size_t transfer_size_ = BLOCK_DATA_SIZE;
 
-    void SendRequest();
 };
 
 #endif // !NODE_RECEIVE_SESSION_H_ 
